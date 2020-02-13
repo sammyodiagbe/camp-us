@@ -8,6 +8,7 @@ const PORT = process.env.PORT || 5000;
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use("/auth", require("./routes/auth-routes/auth-routes"));
+app.use("/connections", require("./routes/connection-routes"));
 
 mongoose
     .connect(process.env.local_database_connection_string, {
