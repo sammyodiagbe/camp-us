@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const joi = require("@hapi/joi");
 const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 
 const User = require("../../models/user");
 const sendEmail = require("../../utils/sendMail");
@@ -50,7 +51,7 @@ router.post("/create-account", (req, res, next) => {
                 password: joi
                     .string()
                     .min(9)
-                    .pattern(new RegExp("^[a-zA-Z0-9]{3,30}$")),
+                    .pattern(new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{8,30})")),
                 nickname: joi
                     .string()
                     .min(2)
@@ -96,38 +97,65 @@ router.post("/create-account", (req, res, next) => {
     );
 });
 router.post("/login", (req, res, next) => {
-    const { emailOrUsername, password } = req.body;
-    User.findOne(
-        { $or: [{ email: emailOrUsername }, { nickname: emailOrUsername }] },
-        (err, any) => {
-            if (err) {
-                return res.status(400).json({
-                    error: true,
-                    message: "oops something went wrong"
-                });
-            }
-
-            if (!any) {
-                return res.json({
-                    error: true,
-                    message: "Invalid Credentials Provided"
-                });
-            }
-
-            const passwordIsValid = bcrypt.compareSync(password, any.password);
-            if (!passwordIsValid) {
-                return res.json({
-                    error: true,
-                    message: "Invalid Credentials Provided"
-                });
-            }
-
-            return res.json({
-                error: null,
-                message: "Login successful"
+    const { username, password } = req.body;
+    User.findOne({ $or: [{ email: username }, { nickname: username }] }, (err, any) => {
+        if (err) {
+            return res.status(400).json({
+                error: true,
+                message: "oops something went wrong"
             });
         }
-    );
+
+        if (!any) {
+            return res.json({
+                error: true,
+                message: "Invalid Credentials Provided"
+            });
+        }
+
+        const passwordIsValid = bcrypt.compareSync(password, any.password);
+        if (!passwordIsValid) {
+            return res.json({
+                error: true,
+                message: "Invalid Credentials Provided"
+            });
+        }
+
+        let user = { ...any._doc };
+        delete user.password;
+        let token = jwt.sign({ user }, process.env.JWT_SECRET);
+        return res
+            .cookie("ssid", token, {
+                maxAge: new Date(Date.now() + 259200000),
+                httpOnly: true
+            })
+            .json({
+                error: null,
+                message: "Login successful",
+                user
+            });
+    });
+});
+
+router.post("/verify-authentication", (req, res, next) => {
+    const { ssid } = req.cookies;
+    if (ssid) {
+        const data = jwt.verify(ssid, process.env.JWT_SECRET);
+        if (data) {
+            const { user } = data;
+            return res.status(200).json({
+                error: false,
+                user
+            });
+        } else {
+            console.log("hello");
+        }
+    }
+    return res.json({
+        error: true,
+        message: "Unauthorized",
+        user: nulls
+    });
 });
 
 router.post("/request-password-reset", (req, res) => {
