@@ -4,44 +4,71 @@ const router = express.Router();
 const Connections = require("../models/connections");
 
 router.post("/follow", (req, res) => {
-    const { follower, followee } = req.body;
+    const { authuser, whomToFollow } = req.body;
     // check if there is a column where the followee already follows the user
-    Connections.findOne({ follower: followee, followee: follower }, (err, found) => {
-        if (err) {
-            return res.json({
-                error: true,
-                message: "Ooops something went wrong"
-            });
-        }
-        if (found) {
-            // then all to do  is to update mutual connection
-            found.mutual_connection = true;
-            return found
-                .save()
-                .then(() => {
-                    res.json({
+    Connections.findOne(
+        {
+            $or: [
+                { follower: authuser, followee: whomToFollow },
+                { follower: whomToFollow, followee: authuser }
+            ]
+        },
+        (err, foundConnection) => {
+            if (err) {
+                return res.json({
+                    error: true,
+                    message: "Something broke"
+                });
+            }
+
+            if (foundConnection) {
+                const { follower } = foundConnection;
+                if (foundConnection.mutual_connection !== true) {
+                    if (follower === authuser) {
+                        // the user already follows this person
+                        return res.json({
+                            error: false,
+                            message: "Already Following"
+                        });
+                    } else {
+                        // if the follower is actually the current profile then it appears to be that the auth user is trying to follow back
+
+                        foundConnection.followee = authuser;
+                        foundConnection.mutual_connection = true;
+                        return foundConnection
+                            .save()
+                            .then(() => {
+                                res.json({
+                                    error: false,
+                                    message: "Successfully followed back"
+                                });
+                            })
+                            .catch((err) => console.log(eerr));
+                    }
+                } else {
+                    // there is a mutual relationship already
+                    return res.json({
                         error: false,
-                        message: "You followed back"
+                        message: "Already following"
                     });
-                })
-                .catch((err) => console.log(err));
-        } else {
-            // create a connection between the users
-            const connection = new Connections({
-                follower,
-                followee
-            });
-            return connection
-                .save()
-                .then(() => {
-                    res.json({
-                        error: false,
-                        message: "You started following" + followee
-                    });
-                })
-                .catch((err) => console.log(err));
+                }
+            } else {
+                let newConnection = new Connections({
+                    follower: authuser,
+                    followee: whomToFollow
+                });
+                newConnection
+                    .save()
+                    .then(() => {
+                        res.json({
+                            error: false,
+                            message: "You started following"
+                        });
+                    })
+                    .catch((err) => console.log(err));
+            }
         }
-    });
+    );
 });
 
 router.post("/unfollow", (req, res) => {
