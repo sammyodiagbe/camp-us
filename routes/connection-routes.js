@@ -2,9 +2,11 @@ const express = require("express");
 
 const router = express.Router();
 const Connections = require("../models/connections");
+const withAuth = require("../utils/withAuth");
 
-router.post("/follow", (req, res) => {
-    const { authuser, whomToFollow } = req.body;
+router.post("/follow", withAuth, (req, res) => {
+    const authuser = req.authuserid;
+    const { whomToFollow } = req.body;
     // check if there is a column where the followee already follows the user
     Connections.findOne(
         {
@@ -71,8 +73,9 @@ router.post("/follow", (req, res) => {
     );
 });
 
-router.post("/unfollow", (req, res) => {
-    const { whoToUnfollow, byWhom } = req.body;
+router.post("/unfollow", withAuth, (req, res) => {
+    const byWhom = req.authuserid;
+    const { whoToUnfollow } = req.body;
     Connections.findOne(
         {
             $or: [

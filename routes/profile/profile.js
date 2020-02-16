@@ -2,8 +2,9 @@ const express = require("express");
 const router = express.Router();
 const User = require("../../models/user");
 const Connection = require("../../models/connections");
+const withAuth = require("../../utils/withAuth");
 
-router.get("/:profileid", (req, res) => {
+router.get("/:profileid", withAuth, (req, res) => {
     const { profileid } = req.params;
     User.findOne({ _id: profileid }, (err, user) => {
         if (err) {
@@ -20,8 +21,9 @@ router.get("/:profileid", (req, res) => {
     });
 });
 
-router.get("/check-connection/:authuserid/:friendid", (req, res) => {
-    const { authuserid, friendid } = req.params;
+router.get("/check-connection/:friendid", withAuth, (req, res) => {
+    const authuserid = req.authuserid;
+    const { friendid } = req.params;
 
     Connection.findOne(
         {

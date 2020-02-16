@@ -22,6 +22,8 @@ app.use(`${baseUrl}/auth`, require("./routes/auth-routes/auth-routes"));
 app.use(`${baseUrl}/connections`, require("./routes/connection-routes"));
 app.use(`${baseUrl}/profile`, require("./routes/profile/profile"));
 app.use(`${baseUrl}/says`, require("./routes/says/says"));
+app.use(`${baseUrl}/interaction`, require("./routes/post-comment"));
+
 mongoose
     .connect(process.env.local_database_connection_string, {
         useNewUrlParser: true,

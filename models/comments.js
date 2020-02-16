@@ -2,20 +2,19 @@ const mongoose = require("mongoose");
 
 const Schema = mongoose.Schema;
 
-const saysSchema = new Schema({
+const commentSchema = new Schema({
     content: {
         type: String,
         required: true
     },
-    time_posted: {
+    time_of_comment: {
         type: Date,
         default: Date.now()
     },
     said_by: {
         type: Schema.Types.ObjectId,
         required: true
-    },
-    comments: [Schema.Types.ObjectId]
+    }
 });
 
-module.exports = mongoose.model("Says", saysSchema);
+module.exports = mongoose.model("Comments", commentSchema);
