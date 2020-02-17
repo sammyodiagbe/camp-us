@@ -8,6 +8,9 @@ const router = express.Router();
 router.post("/new-post", withAuth, (req, res) => {
     const authuserid = req.authuserid;
     // content said_by
+
+    console.log(authuserid);
+    const { content } = req.body;
     const newSay = new Say({
         content,
         said_by: authuserid

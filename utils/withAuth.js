@@ -1,6 +1,6 @@
 const jwt = require("jsonwebtoken");
 
-module.exports = (req, res) => {
+module.exports = (req, res, next) => {
     const { ssid } = req.cookies;
     if (ssid) {
         let returnData = jwt.verify(ssid, process.env.JWT_SECRET);
