@@ -24,7 +24,6 @@ router.get("/:profileid", withAuth, (req, res) => {
 router.get("/check-connection/:friendid", withAuth, (req, res) => {
     const authuserid = req.authuserid;
     const { friendid } = req.params;
-
     Connection.findOne(
         {
             $or: [
@@ -46,23 +45,33 @@ router.get("/check-connection/:friendid", withAuth, (req, res) => {
             if (!any) {
                 isMutual = false;
                 isFollowing = false;
-            }
-
-            // if there is a mutual relationship between users
-            if (any.mutual_connection === true) {
-                isMutual = true;
-                isFollowing = true;
+                return res.json({
+                    error: false,
+                    isFollowing,
+                    isMutual
+                });
             } else {
-                // if no mutual relationship but the auth user follows
-                if (any.follower === authuserid) {
+                if (any.mutual_connection === true) {
+                    isMutual = true;
                     isFollowing = true;
+                    return res.json({
+                        isMutual,
+                        isFollowing
+                    });
+                } else {
+                    // if no mutual relationship but the auth user follows
+                    if (any.follower == authuserid) {
+                        isFollowing = true;
+                        isMutual = false;
+                        return res.json({
+                            isFollowing,
+                            isMutual
+                        });
+                    }
                 }
             }
-            return res.json({
-                error: false,
-                isFollowing,
-                isMutual
-            });
+
+            // if there is a mutual relationship between userss
         }
     );
 });

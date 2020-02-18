@@ -23,36 +23,36 @@ router.post("/follow", withAuth, (req, res) => {
                 });
             }
 
+            // else {
+            //     // there is a mutual relationship already
+            //     return res.json({
+            //         error: false,
+            //         message: "Already following"
+            //     });
+            // }
+
             if (foundConnection) {
                 const { follower } = foundConnection;
-                if (foundConnection.mutual_connection !== true) {
-                    if (follower === authuser) {
-                        // the user already follows this person
-                        return res.json({
-                            error: false,
-                            message: "Already Following"
-                        });
-                    } else {
-                        // if the follower is actually the current profile then it appears to be that the auth user is trying to follow back
-
-                        foundConnection.followee = authuser;
-                        foundConnection.mutual_connection = true;
-                        return foundConnection
-                            .save()
-                            .then(() => {
-                                res.json({
-                                    error: false,
-                                    message: "Successfully followed back"
-                                });
-                            })
-                            .catch((err) => console.log(eerr));
-                    }
-                } else {
-                    // there is a mutual relationship already
+                if (foundConnection.mutual_connection === true || follower == authuser) {
+                    // the user already follows this person
                     return res.json({
                         error: false,
-                        message: "Already following"
+                        message: "Already Following"
                     });
+                } else {
+                    // if the follower is actually the current profile then it appears to be that the auth user is trying to follow back
+
+                    foundConnection.followee = authuser;
+                    foundConnection.mutual_connection = true;
+                    return foundConnection
+                        .save()
+                        .then(() => {
+                            res.json({
+                                error: false,
+                                message: "Successfully followed back"
+                            });
+                        })
+                        .catch((err) => console.log(err));
                 }
             } else {
                 let newConnection = new Connections({
@@ -62,7 +62,7 @@ router.post("/follow", withAuth, (req, res) => {
                 newConnection
                     .save()
                     .then(() => {
-                        res.json({
+                        return res.json({
                             error: false,
                             message: "You started following"
                         });
@@ -76,6 +76,7 @@ router.post("/follow", withAuth, (req, res) => {
 router.post("/unfollow", withAuth, (req, res) => {
     const byWhom = req.authuserid;
     const { whoToUnfollow } = req.body;
+    console.log(byWhom, " ", whoToUnfollow);
     Connections.findOne(
         {
             $or: [
@@ -100,9 +101,9 @@ router.post("/unfollow", withAuth, (req, res) => {
             const { _id, follower, followee, mutual_connection } = foundConnection;
 
             // now that a connection is found
-
+            console.log(follower, " ", followee);
             // if the initiator of the unfollow action initiated the connection in the first place and mutual connection is false
-            if (follower._id === byWhom) {
+            if (follower == byWhom) {
                 // if the followee actually follows back
                 if (mutual_connection === true) {
                     // swap the follower and the followee then set mutual relationship to false
@@ -120,7 +121,7 @@ router.post("/unfollow", withAuth, (req, res) => {
                         .catch((err) => console.log(err));
                 } else {
                     // drop the connection column
-                    Connections.findByIdAndDelete(_id, (err, done) => {
+                    Connections.findByIdAndDelete({ _id }, (err, done) => {
                         if (err) {
                             return res.json({
                                 error: true,
