@@ -46,4 +46,41 @@ router.post("/new-comment", withAuth, (req, res) => {
         .catch((err) => console.log(err));
 });
 
+router.post("/post/like", withAuth, (req, res) => {
+    const { authuserid } = req;
+    const { say } = req.body;
+    Say.findOne({ _id: say }, (err, found) => {
+        if (err) {
+            return res.json({
+                error: true,
+                message: "Something broke"
+            });
+        }
+        if (found) {
+            let { likes } = found;
+            let tempLikes = likes;
+            if (likes.indexOf(authuserid) > -1) {
+                // user already likes the post then remove it
+                tempLikes.splice(likes.indexOf(authuserid), 1);
+                found.likes = tempLikes;
+                found
+                    .save()
+                    .then(() => {
+                        res.json({
+                            message: "unliked"
+                        });
+                    })
+                    .catch((err) => console.log(err));
+            } else {
+                found.likes.push(authuserid);
+                found.save(() => {
+                    res.json({
+                        message: "liked"
+                    });
+                });
+            }
+        }
+    });
+});
+
 module.exports = router;

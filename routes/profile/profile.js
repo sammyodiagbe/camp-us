@@ -51,7 +51,7 @@ router.get("/check-connection/:friendid", withAuth, (req, res) => {
                     isMutual
                 });
             } else {
-                if (any.mutual_connection === true) {
+                if (any.mutual_connection == true) {
                     isMutual = true;
                     isFollowing = true;
                     return res.json({
