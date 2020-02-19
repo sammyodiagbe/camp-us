@@ -16,8 +16,8 @@ const saysSchema = new Schema({
         required: true,
         ref: "user"
     },
-    comments: [Schema.Types.ObjectId],
-    likes: [Schema.Types.ObjectId]
+    comments: [{ type: Schema.Types.ObjectId, ref: "user" }],
+    likes: [{ type: Schema.Types.ObjectId, ref: "user" }]
 });
 
 module.exports = mongoose.model("Says", saysSchema);
