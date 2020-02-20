@@ -23,6 +23,7 @@ app.use(`${baseUrl}/connections`, require("./routes/connection-routes"));
 app.use(`${baseUrl}/profile`, require("./routes/profile/profile"));
 app.use(`${baseUrl}/says`, require("./routes/says/says"));
 app.use(`${baseUrl}/interaction`, require("./routes/post-comment"));
+app.use(`${baseUrl}/messaging`, require("./routes/messages"));
 
 mongoose
     .connect(process.env.local_database_connection_string, {

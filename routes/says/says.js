@@ -20,7 +20,7 @@ router.get("/:profileid", (req, res) => {
 
             res.json({
                 error: false,
-                says
+                says: says.reverse()
             });
         });
 });
