@@ -6,6 +6,7 @@ const withAuth = require("../../utils/withAuth");
 
 router.get("/:profileid", withAuth, (req, res) => {
     const { profileid } = req.params;
+
     User.findOne({ _id: profileid }, (err, user) => {
         if (err) {
             console.log(err);
@@ -28,7 +29,7 @@ router.get("/check-connection/:friendid", withAuth, (req, res) => {
         {
             $or: [
                 { follower: authuserid, followee: friendid },
-                { followee: friendid, follower: authuserid }
+                { follower: friendid, followee: authuserid }
             ]
         },
         (err, any) => {
@@ -40,9 +41,11 @@ router.get("/check-connection/:friendid", withAuth, (req, res) => {
                     message: "Ooops something broke"
                 });
             }
-
+            console.log("found connections ", any);
             // if no relationship column has been made between the two user
             if (!any) {
+                console.log("no relationship table has been found");
+                console.log(any);
                 isMutual = false;
                 isFollowing = false;
                 return res.json({

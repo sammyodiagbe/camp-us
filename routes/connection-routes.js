@@ -31,6 +31,7 @@ router.post("/follow", withAuth, (req, res) => {
             //     });
             // }
 
+            console.trace("checking connection ", foundConnection);
             if (foundConnection) {
                 const { follower } = foundConnection;
                 if (foundConnection.mutual_connection === true || follower == authuser) {
