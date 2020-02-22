@@ -78,4 +78,6 @@ router.get("/check-connection/:friendid", withAuth, (req, res) => {
         }
     );
 });
+
+router.get("/feeds", (req, res) => {});
 module.exports = router;
