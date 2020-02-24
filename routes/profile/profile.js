@@ -100,13 +100,20 @@ router.get("/feeds/get-feeds", withAuth, (req, res) => {
                 return follower === authuserid ? followee : follower;
             });
 
-            Says.find({ said_by: { $in: [...filteredData, authuserid] } }, (err, data) => {
-                if (err) {
-                    return console.log(err);
-                }
-
-                console.log(data);
-            });
+            Says.find({ said_by: { $in: [...filteredData, authuserid] } })
+                .populate("said_by", "firstname lastname nickname")
+                .exec((err, data) => {
+                    if (err) {
+                        return res.json({
+                            error: "true",
+                            message: "something broke"
+                        });
+                    }
+                    console.log(data);
+                    res.json({
+                        feeds: data
+                    });
+                });
         }
     );
 });

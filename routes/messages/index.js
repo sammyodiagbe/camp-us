@@ -69,9 +69,9 @@ router.post("/new-message", withAuth, (req, res) => {
 router.get("/get-all-conversations", withAuth, (req, res) => {
     const { authuserid } = req;
 
-    Conversations.find(
-        { $or: [{ user1: authuserid }, { user2: authuserid }] },
-        (err, userConversations) => {
+    Conversations.find({ $or: [{ user1: authuserid }, { user2: authuserid }] })
+        .populate("messages")
+        .exec((err, userConversations) => {
             if (err) {
                 return res.json({
                     error: true,
@@ -82,7 +82,7 @@ router.get("/get-all-conversations", withAuth, (req, res) => {
             if (userConversations.length) {
                 return res.json({
                     error: false,
-                    conversations: userConversations.reverse()[0]
+                    conversations: userConversations.reverse()
                 });
             }
 
@@ -90,8 +90,7 @@ router.get("/get-all-conversations", withAuth, (req, res) => {
                 error: false,
                 conversations: []
             });
-        }
-    );
+        });
 });
 
 router.get("/get-active-conversation/:friendid", withAuth, (req, res) => {
