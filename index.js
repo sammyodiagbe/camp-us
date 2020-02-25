@@ -28,6 +28,7 @@ app.use(`${baseUrl}/profile`, require("./routes/profile/profile"));
 app.use(`${baseUrl}/says`, require("./routes/says/says"));
 app.use(`${baseUrl}/interaction`, require("./routes/post-comment"));
 app.use(`${baseUrl}/messaging`, require("./routes/messages"));
+app.use(`${baseUrl}/people`, require("./routes/search"));
 
 // I
 
