@@ -12,7 +12,8 @@ const IO = require("./io")(server);
 const PORT = process.env.PORT || 5000;
 const baseUrl = "/api/camp-us";
 
-require("./io/actions")(IO);
+require("./io/namespaces/chat")(IO);
+
 app.use(cookieParser(process.env.JWT_SECRET));
 app.use(
     cors({
@@ -29,7 +30,7 @@ app.use(`${baseUrl}/says`, require("./routes/says/says"));
 app.use(`${baseUrl}/interaction`, require("./routes/post-comment"));
 app.use(`${baseUrl}/messaging`, require("./routes/messages"));
 app.use(`${baseUrl}/people`, require("./routes/search"));
-
+app.use(`${baseUrl}/notifications/`, require("./routes/notifications"));
 // I
 
 mongoose

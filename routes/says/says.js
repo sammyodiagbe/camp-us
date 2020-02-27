@@ -7,11 +7,10 @@ router.get("/:profileid", (req, res) => {
     Says.find({ said_by: profileid })
         .populate({
             path: "said_by",
-            select: ["firstname", "lastname", "nickname", "email", "time_posted"]
+            select: ["name", "nickname", "email", "time_posted"]
         })
         .exec((err, says) => {
             if (err) {
-                console.log(err);
                 return res.json({
                     error: true,
                     message: "Oops something broke"

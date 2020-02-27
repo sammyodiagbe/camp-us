@@ -38,12 +38,7 @@ router.post("/create-account", (req, res, next) => {
             }
 
             const schema = joi.object({
-                firstname: joi
-                    .string()
-                    .min(2)
-                    .max(30)
-                    .required(),
-                lastname: joi
+                name: joi
                     .string()
                     .min(2)
                     .max(30)
@@ -64,11 +59,10 @@ router.post("/create-account", (req, res, next) => {
             let isValid = schema.validate(incomingData);
             if (!isValid.error) {
                 let data = isValid.value;
-                const { email, firstname, lastname, password, nickname } = data;
+                const { email, name, password, nickname } = data;
                 const newUser = new User({
                     email,
-                    lastname,
-                    firstname,
+                    name,
                     nickname
                 });
                 // check if there is a user with the sent credentails
@@ -148,13 +142,12 @@ router.post("/verify-authentication", (req, res, next) => {
                 user
             });
         } else {
-            console.log("hello");
         }
     }
     return res.json({
         error: true,
         message: "Unauthorized",
-        user: nulls
+        user: null
     });
 });
 

@@ -16,7 +16,7 @@ const saysSchema = new Schema({
         required: true,
         ref: "user"
     },
-    comments: [{ type: Schema.Types.ObjectId, ref: "user" }],
+    comments: [{ type: Schema.Types.ObjectId, ref: "comment" }],
     likes: [{ type: Schema.Types.ObjectId, ref: "user" }]
 });
 

@@ -7,16 +7,12 @@ const withAuth = require("../../utils/withAuth");
 
 router.get("/search/:searchquery", withAuth, (req, res) => {
     const { searchquery } = req.params;
-    console.log("let find user");
+    const regex = new RegExp(`(?=${searchquery})`, "ig");
     User.find(
         {
-            $or: [
-                { firstname: { $regex: `${searchquery}` } },
-                { lastname: { $regex: `${searchquery}` } },
-                { nickname: { $regex: `${searchquery}` } }
-            ]
+            $or: [{ name: { $regex: regex } }, { nickname: { $regex: regex } }]
         },
-        "firstname lastname nickname",
+        "name nickname",
         (err, users) => {
             if (err) {
                 return res.json({

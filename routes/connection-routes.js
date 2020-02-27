@@ -30,8 +30,6 @@ router.post("/follow", withAuth, (req, res) => {
             //         message: "Already following"
             //     });
             // }
-
-            console.trace("checking connection ", foundConnection);
             if (foundConnection) {
                 const { follower } = foundConnection;
                 if (foundConnection.mutual_connection === true || follower == authuser) {
@@ -77,7 +75,6 @@ router.post("/follow", withAuth, (req, res) => {
 router.post("/unfollow", withAuth, (req, res) => {
     const byWhom = req.authuserid;
     const { whoToUnfollow } = req.body;
-    console.log(byWhom, " ", whoToUnfollow);
     Connections.findOne(
         {
             $or: [
@@ -102,7 +99,6 @@ router.post("/unfollow", withAuth, (req, res) => {
             const { _id, follower, followee, mutual_connection } = foundConnection;
 
             // now that a connection is found
-            console.log(follower, " ", followee);
             // if the initiator of the unfollow action initiated the connection in the first place and mutual connection is false
             if (follower == byWhom) {
                 // if the followee actually follows back

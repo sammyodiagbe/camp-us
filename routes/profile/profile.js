@@ -10,7 +10,6 @@ router.get("/:profileid", withAuth, (req, res) => {
 
     User.findOne({ _id: profileid }, (err, user) => {
         if (err) {
-            console.log(err);
             return res.json({
                 error: true,
                 message: "oops something went wrong again"
@@ -42,11 +41,8 @@ router.get("/check-connection/:friendid", withAuth, (req, res) => {
                     message: "Ooops something broke"
                 });
             }
-            console.log("found connections ", any);
             // if no relationship column has been made between the two user
             if (!any) {
-                console.log("no relationship table has been found");
-                console.log(any);
                 isMutual = false;
                 isFollowing = false;
                 return res.json({
@@ -83,7 +79,6 @@ router.get("/check-connection/:friendid", withAuth, (req, res) => {
 router.get("/feeds/get-feeds", withAuth, (req, res) => {
     const { authuserid } = req;
     // get a list of all the user's followers
-    console.log("check ", authuserid);
     Connection.find(
         { $or: [{ follower: authuserid }, { mutual_connection: true, followee: authuserid }] },
         "follower followee",
@@ -101,7 +96,7 @@ router.get("/feeds/get-feeds", withAuth, (req, res) => {
             });
 
             Says.find({ said_by: { $in: [...filteredData, authuserid] } })
-                .populate("said_by", "firstname lastname nickname")
+                .populate("said_by", "name nickname")
                 .exec((err, data) => {
                     if (err) {
                         return res.json({
@@ -109,7 +104,6 @@ router.get("/feeds/get-feeds", withAuth, (req, res) => {
                             message: "something broke"
                         });
                     }
-                    console.log(data);
                     res.json({
                         feeds: data
                     });
