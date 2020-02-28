@@ -13,14 +13,20 @@ const PORT = process.env.PORT || 5000;
 const baseUrl = "/api/camp-us";
 
 require("./io/namespaces/chat")(IO);
+var whitelist = ["http://localhost:3000", "http://192.168.43.50:3000"];
+var corsOptions = {
+    origin: function(origin, callback) {
+        if (whitelist.indexOf(origin) !== -1) {
+            callback(null, true);
+        } else {
+            callback(new Error("Not allowed by CORS"));
+        }
+    },
+    credentials: true
+};
 
 app.use(cookieParser(process.env.JWT_SECRET));
-app.use(
-    cors({
-        credentials: true,
-        origin: "http://localhost:3000"
-    })
-);
+app.use(cors(corsOptions));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(`${baseUrl}/auth`, require("./routes/auth-routes/auth-routes"));
