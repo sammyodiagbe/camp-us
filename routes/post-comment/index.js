@@ -9,13 +9,16 @@ const router = express.Router();
 router.get("/getpost/:postid", withAuth, (req, res) => {
     const { postid } = req.params;
     Say.findOne({ _id: postid })
-        .populate("said_by", "name nickname")
+        .populate("said_by comments", "name nickname comments.said_by")
+        .populate("comments", "said_by body")
+        .populate("comments.0.said_by", "name nickname")
         .exec((err, post) => {
             if (err)
                 return res.json({
                     error: true,
                     message: "Something broke"
                 });
+
             res.json({
                 say: post
             });
@@ -58,38 +61,48 @@ router.post("/new-post", withAuth, (req, res) => {
 router.post("/new-comment", withAuth, (req, res) => {
     const authuserid = req.authuserid;
     const verb = "COMMENT";
-    const { comment, postid } = req.body;
-    Say.findOne({ _id: postid }, (err, say) => {
-        if (err) {
-            return res.json({
-                error: true,
-                message: "Something broke"
-            });
-        }
-        if (!say) return;
+    const { body, postid } = req.body;
+    console.log("recieved data ", req.body);
+    Say.findOne({ _id: postid })
+        .populate("comment")
+        .exec((err, say) => {
+            if (err) {
+                return res.json({
+                    error: true,
+                    message: "Something broke"
+                });
+            }
+            if (!say) return;
 
-        // if there is a say
-        const newComment = new Comment({
-            body: comment,
-            said_by: authuserid
-        });
-        newComment.save(() => {
-            // create a notification
-            Notification.findOne({ ref: postid, verb }, (err, notification) => {
-                if (err) {
-                    return;
-                }
-                let bywhom = notification.bywhom;
-                if (bywhom.indexOf(authuserid) > -1) {
-                    return;
-                } else {
-                    bywhom.push(authuserid);
-                    notification.bywhom = bywhom;
-                    notification.save();
-                }
+            // if there is a say
+            const newComment = new Comment({
+                body,
+                said_by: authuserid
+            });
+            newComment.save((err, doc) => {
+                // console.log("An error occurred ", doc);
+                // create a notification
+                say.comments.push(doc);
+                console.log(say);
+                say.save((err, doc) => {});
+                Notification.findOne({ ref: postid, verb }, (err, notification) => {
+                    if (err) {
+                        return;
+                    }
+                    let bywhom = notification.bywhom;
+                    if (bywhom.indexOf(authuserid) > -1) {
+                        return;
+                    } else {
+                        bywhom.push(authuserid);
+                        notification.bywhom = bywhom;
+                        notification.save();
+                    }
+                });
+                return res.json({
+                    message: "comment added successfully"
+                });
             });
         });
-    });
 });
 
 router.post("/post/like", withAuth, (req, res) => {

@@ -80,7 +80,7 @@ router.get("/feeds/get-feeds", withAuth, (req, res) => {
     const { authuserid } = req;
     // get a list of all the user's followers
     Connection.find(
-        { $or: [{ follower: authuserid }, { mutual_connection: true, followee: authuserid }] },
+        { $or: [{ follower: authuserid }, { mutual_connection: true }] },
         "follower followee",
         (err, data) => {
             if (err) {

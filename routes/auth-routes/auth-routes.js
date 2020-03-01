@@ -120,7 +120,7 @@ router.post("/login", (req, res, next) => {
         let token = jwt.sign({ user }, process.env.JWT_SECRET);
         return res
             .cookie("ssid", token, {
-                maxAge: 25920000,
+                maxAge: Date.now() + 25920000,
                 httpOnly: true
             })
             .json({

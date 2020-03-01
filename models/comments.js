@@ -13,7 +13,8 @@ const commentSchema = new Schema({
     },
     said_by: {
         type: Schema.Types.ObjectId,
-        required: true
+        required: true,
+        ref: "user"
     }
 });
 
