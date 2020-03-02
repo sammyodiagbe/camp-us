@@ -53,7 +53,7 @@ app.use(`${baseUrl}/notifications/`, require("./routes/notifications"));
 // })
 
 if (process.env.enviroment === "production") {
-    const root = path.join(__dirname, "build", "index.html");
+    const root = path.join(__dirname, "build");
     app.use(express.static(root));
 
     app.get("*", (request, response) => {
