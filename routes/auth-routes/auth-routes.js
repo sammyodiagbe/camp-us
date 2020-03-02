@@ -5,7 +5,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
 const User = require("../../models/user");
-const sendEmail = require("../../utils/sendMail");
+// const sendEmail = require("../../utils/sendMail");
 
 router.post("/create-account", (req, res, next) => {
     // get the data from the frontend
@@ -151,33 +151,33 @@ router.post("/verify-authentication", (req, res, next) => {
     });
 });
 
-router.post("/request-password-reset", (req, res) => {
-    const { email } = req.body;
-    User.findOne({ email }, (err, user) => {
-        if (err) {
-            return res.json({
-                error: true,
-                message: "Oops something went wrong"
-            });
-        }
-        if (!user) {
-            return res.json({
-                error: true,
-                message: "Email doesn't appear in our database"
-            });
-        }
-        let data = {
-            from: "noreply@soud.com",
-            to: email,
-            subject: "Password Reset",
-            text: "This will reset your password"
-        };
-        let sendResetEmail = sendEmail(data);
-        sendResetEmail.then(() => {}).catch((err) => {});
-        res.json({
-            error: null,
-            message: "Email has been sent to provided mail"
-        });
-    });
-});
+// router.post("/request-password-reset", (req, res) => {
+//     const { email } = req.body;
+//     User.findOne({ email }, (err, user) => {
+//         if (err) {
+//             return res.json({
+//                 error: true,
+//                 message: "Oops something went wrong"
+//             });
+//         }
+//         if (!user) {
+//             return res.json({
+//                 error: true,
+//                 message: "Email doesn't appear in our database"
+//             });
+//         }
+//         let data = {
+//             from: "noreply@soud.com",
+//             to: email,
+//             subject: "Password Reset",
+//             text: "This will reset your password"
+//         };
+//         let sendResetEmail = sendEmail(data);
+//         sendResetEmail.then(() => {}).catch((err) => {});
+//         res.json({
+//             error: null,
+//             message: "Email has been sent to provided mail"
+//         });
+//     });
+// });
 module.exports = router;
