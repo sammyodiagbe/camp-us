@@ -19,7 +19,8 @@ require("./io/namespaces/profile")(IO);
 var whitelist = [
     "http://localhost:3000",
     "http://192.168.43.50:3000",
-    "http://192.168.43.255:3000"
+    "http://192.168.43.255:3000",
+    "https://konert.herokuapp.com/"
 ];
 var corsOptions = {
     origin: function(origin, callback) {
@@ -58,7 +59,7 @@ mongoose
     .connect(
         process.env.enviroment === "development"
             ? process.env.local_database_connection_string
-            : process.env.production_connection_string,
+            : process.env.MONGODB_URI,
         {
             useNewUrlParser: true,
             useUnifiedTopology: true
