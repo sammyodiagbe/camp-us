@@ -11,7 +11,7 @@ const app = express();
 const server = http.createServer(app);
 const IO = require("./io")(server);
 const PORT = process.env.PORT || 5000;
-const baseUrl = "/api/camp-us";
+const baseUrl = "";
 
 require("./io/namespaces/chat")(IO);
 require("./io/namespaces/feeds")(IO);
