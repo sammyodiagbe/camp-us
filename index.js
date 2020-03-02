@@ -47,11 +47,17 @@ app.use(`${baseUrl}/people`, require("./routes/search"));
 app.use(`${baseUrl}/notifications/`, require("./routes/notifications"));
 // I
 
+// app.use(express.static(root));
+// app.get("*", (req, res) => {
+//     res.sendFile('index.html', { root });
+// })
+
 if (process.env.enviroment === "production") {
-    app.use(express.static("/build"));
+    const root = path.join(__dirname, "build", "index.html");
+    app.use(express.static(root));
 
     app.get("*", (request, response) => {
-        response.sendFile(path.join(__dirname, "build", "index.html"));
+        response.sendFile("index.html", { root });
     });
 }
 
