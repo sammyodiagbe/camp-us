@@ -48,10 +48,10 @@ app.use(`${baseUrl}/notifications/`, require("./routes/notifications"));
 // I
 
 if (process.env.enviroment === "production") {
-    app.use(express.static("client/build"));
+    app.use(express.static("/build"));
 
     app.get("*", (request, response) => {
-        response.sendFile(path.join(__dirname, "client", "build", "index.html"));
+        response.sendFile(path.join(__dirname, "build", "index.html"));
     });
 }
 
