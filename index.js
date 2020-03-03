@@ -11,17 +11,12 @@ const app = express();
 const server = http.createServer(app);
 const IO = require("./io")(server);
 const PORT = process.env.PORT || 5000;
-const baseUrl = "";
+const baseUrl = "/api/v1";
 
 require("./io/namespaces/chat")(IO);
 require("./io/namespaces/feeds")(IO);
 require("./io/namespaces/profile")(IO);
-var whitelist = [
-    "http://localhost:3000",
-    "http://192.168.43.50:3000",
-    "http://192.168.43.255:3000",
-    "https://konert.herokuapp.com/"
-];
+var whitelist = ["https://konert.herokuapp.com/", "http://localhost:3000"];
 var corsOptions = {
     origin: function(origin, callback) {
         if (whitelist.indexOf(origin) !== -1) {
@@ -34,7 +29,7 @@ var corsOptions = {
 };
 
 app.use(cookieParser(process.env.JWT_SECRET));
-app.use(cors({ origin: "https://konert.herokuapp.com/" }));
+app.use(cors(corsOptions));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(`${baseUrl}/auth`, require("./routes/auth-routes/auth-routes"));
