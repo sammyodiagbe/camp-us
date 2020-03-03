@@ -16,7 +16,7 @@ const baseUrl = "/api/v1";
 require("./io/namespaces/chat")(IO);
 require("./io/namespaces/feeds")(IO);
 require("./io/namespaces/profile")(IO);
-var whitelist = ["https://konert.herokuapp.com/", "http://localhost:3000"];
+var whitelist = ["https://konert.herokuapp.com", "http://localhost:3000"];
 var corsOptions = {
     origin: function(origin, callback) {
         if (whitelist.indexOf(origin) !== -1) {
