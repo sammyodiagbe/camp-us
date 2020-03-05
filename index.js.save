@@ -16,7 +16,7 @@ const baseUrl = "/api/v1";
 require("./io/namespaces/chat")(IO);
 require("./io/namespaces/feeds")(IO);
 require("./io/namespaces/profile")(IO);
-var whitelist = ["https://konert.herokuapp.com", "http://localhost:3000", "konert.herokuapp.com"];
+var whitelist = ["https://konert.herokuapp.com", "http://localhost:3000", "konert];
 var corsOptions = {
     origin: function(origin, callback) {
         if (whitelist.indexOf(origin) !== -1) {
@@ -28,9 +28,8 @@ var corsOptions = {
     credentials: true
 };
 
-console.log(process.env.enviroment);
 app.use(cookieParser(process.env.JWT_SECRET));
-app.use(cors({origin: 'https://konert.herokuapp.com'}));
+app.use(cors(corsOptions));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(`${baseUrl}/auth`, require("./routes/auth-routes/auth-routes"));

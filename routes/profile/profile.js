@@ -1,4 +1,5 @@
 const express = require("express");
+const mongoose = require("mongoose");
 const router = express.Router();
 const User = require("../../models/user");
 const Says = require("../../models/says");
@@ -80,7 +81,13 @@ router.get("/feeds/get-feeds", withAuth, (req, res) => {
     const { authuserid } = req;
     // get a list of all the user's followers
     Connection.find(
-        { $or: [{ followee: authuserid }, { mutual_connection: true }] },
+        {
+            $or: [
+                { follower: authuserid },
+                { mutual_connection: true, followee: authuserid },
+                { mutual_connection: true }
+            ]
+        },
         "follower followee",
         (err, data) => {
             if (err) {
@@ -90,14 +97,17 @@ router.get("/feeds/get-feeds", withAuth, (req, res) => {
                 });
             }
 
-            let filteredData = data.map((entry) => {
+            let filteredData = data.map((entry, index) => {
                 const { follower, followee } = entry;
-                return follower === authuserid ? followee : follower;
+                console.log(follower, followee, typeof follower);
+                return follower == authuserid ? followee : follower;
             });
+            filteredData.push(new mongoose.Types.ObjectId(authuserid));
+            console.log(filteredData, "authuserid: ", authuserid);
 
-            Says.find({ said_by: { $in: [...filteredData, authuserid] } })
+            Says.find({ said_by: { $in: filteredData } })
                 .populate("said_by", "name nickname")
-                .exec((err, data) => {
+                .exec((err, gottendata) => {
                     if (err) {
                         return res.json({
                             error: "true",
@@ -105,7 +115,7 @@ router.get("/feeds/get-feeds", withAuth, (req, res) => {
                         });
                     }
                     res.json({
-                        feeds: data
+                        feeds: gottendata
                     });
                 });
         }
