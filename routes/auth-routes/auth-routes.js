@@ -151,6 +151,13 @@ router.post("/verify-authentication", (req, res, next) => {
     });
 });
 
+
+router.post("/logout", (req, res, next) => {
+    res.clearCookie("ssid").json({
+    error: null,
+    user: null
+  });
+})
 // router.post("/request-password-reset", (req, res) => {
 //     const { email } = req.body;
 //     User.findOne({ email }, (err, user) => {

@@ -28,9 +28,8 @@ var corsOptions = {
     credentials: true
 };
 
-console.log(process.env.enviroment);
 app.use(cookieParser(process.env.JWT_SECRET));
-app.use(cors({origin: 'https://konert.herokuapp.com'}));
+app.use(cors({ origin: "https://konert.herokuapp.com"}));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(`${baseUrl}/auth`, require("./routes/auth-routes/auth-routes"));

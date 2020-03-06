@@ -20,11 +20,13 @@ module.exports = (io) => {
         });
 
         socket.on("new_message", (data) => {
-            const { friendid, body, time } = data;
+            const { friendid, body, time, sender } = data;
             const channel = uniqueid[friendid];
             socket.to(channel).emit("new_message", data);
         });
 
-        socket.on("disconnect", () => {});
+        socket.on("disconnect", () => {
+            socket.removeAllListeners();
+        });
     });
 };
